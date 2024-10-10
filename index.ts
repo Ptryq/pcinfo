@@ -93,7 +93,7 @@ async function savePcDataToFile(data: typeof pcData) {
 console.log(pcData);
 
 const sendDataToServer = async (data: typeof pcData) => {
-    fetch('http://192.168.78.33:3000/device', {
+    fetch('http://192.168.78.33:2137/device', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -106,10 +106,12 @@ const sendDataToServer = async (data: typeof pcData) => {
 }
 
 // Uruchomienie programu
-savePcDataToFile(pcData);
+// savePcDataToFile(pcData);
 
-const valid = prompt("Is this okey? (y/N)", "y");
+// const valid = prompt("Is this okey? (y/N)", "y");
 
-if(valid == "y") {
-    sendDataToServer(pcData);
-}
+// if(valid == "y") {
+//     sendDataToServer(pcData);
+// }
+
+sendDataToServer(pcData);

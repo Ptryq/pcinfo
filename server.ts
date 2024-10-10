@@ -64,7 +64,7 @@ body: t.Object({
 })
 })
 
-server.listen(3000, () => {
-console.log('Server is listening on port 3000');
+server.listen(2137, () => {
+console.log('Server is listening on port 2137');
 
 })
