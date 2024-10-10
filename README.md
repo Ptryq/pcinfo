@@ -6,10 +6,21 @@ To install dependencies:
 bun install
 ```
 
-To run:
+To test client run:
 
 ```bash
 bun run index.ts
 ```
 
-This project was created using `bun init` in bun v1.1.30. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+To run server:
+
+```bash
+bun run server.ts
+```
+
+To build executable client run (i hope this work 💀💀💀):
+
+```bash
+bun build .\index.js --compile --target=bun-windows-x64-baseline --minify --sourcemap --outfile app
+```
+
