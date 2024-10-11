@@ -1,10 +1,10 @@
-import Elysia, {t} from "elysia";
-import {Sequelize, DataTypes} from "sequelize";
+import Elysia, { t } from "elysia";
+import { Sequelize, DataTypes } from "sequelize";
 
 const db = new Sequelize({
     dialect: 'sqlite',
-storage: './db.sqlite'
-})
+    storage: './db.sqlite'
+});
 
 const Device = db.define('Device', {
     host: {
@@ -34,37 +34,48 @@ const Device = db.define('Device', {
     },
     os_version: {
         type: DataTypes.STRING,
+    },
+    user: {
+        type: DataTypes.STRING,
     }
-})
-
-await db.sync({
-    force: true // this clears whole DB
 });
 
-const server = new Elysia().post('/device', ({body: { data}}) => {
-    Device.create({ ...data})
+await db.sync({
+    force: true // this clears the whole DB
+});
 
-    return {
-        success: true
+const server = new Elysia().post('/device', async ({ body: { data } }) => {
+    try {
+        // Używamy upsert do aktualizacji lub utworzenia nowego rekordu
+        await Device.upsert({ ...data });
+
+        return {
+            success: true
+        };
+    } catch (error) {
+        console.error("Error while upserting device:", error);
+        return {
+            success: false,
+            message: "Error while saving device"
+        };
     }
-
 }, {
-body: t.Object({
+    body: t.Object({
         data: t.Object({
-        host: t.String(),
-        sn: t.String(),
-        cpu: t.String(),
-        ram: t.String(),
-        producent: t.String(),
-        model: t.String(),
-        family: t.String(),
-        disk: t.String(),
-        os_version: t.String(),
+            host: t.String(),
+            sn: t.String(),
+            cpu: t.String(),
+            ram: t.String(),
+            producent: t.String(),
+            model: t.String(),
+            family: t.String(),
+            disk: t.String(),
+            os_version: t.String(),
+            user: t.String(),
+        })
     })
-})
-})
+});
 
 server.listen(2137, () => {
-console.log('Server is listening on port 2137');
-
-})
+    console.log('Server is listening on port 2137');
+});
