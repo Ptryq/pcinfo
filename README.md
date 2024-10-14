@@ -6,7 +6,7 @@ Linux 🐧:
 ```bash
 curl -fsSL https://bun.sh/install | bash
 ```
-               🪟
+                 🪟
 Windows 🏌️:
 ```bash
 powershell -c "irm bun.sh/install.ps1|iex"
