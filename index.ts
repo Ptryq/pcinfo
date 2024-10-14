@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as si from 'systeminformation';
 import { createSelection } from 'bun-promptx'
 import readline from 'readline';
+import * as figlet from 'figlet';
 
 
 const rl = readline.createInterface({
@@ -11,14 +12,18 @@ const rl = readline.createInterface({
 });
 
 async function getUser() {
-    return new Promise((resolve) => {
-        rl.question('Podaj swoje imię i nazwisko: ', (answer) => {
-            resolve(answer); 
+    console.log(figlet.textSync('D E F R O', {
+        font: 'Standard',
+        horizontalLayout: 'default',
+        verticalLayout: 'default',
+        width: 100,
+        whitespaceBreak: true
+    }));    return new Promise((resolve) => {
+        rl.question(`[kolejność: imię potem nazwisko] \n Podaj swoje imię i nazwisko: `, (answer) => {            resolve(answer); 
             rl.close(); 
         });
     });
 }
-
 function getCpuInfo() {
     const cpus = os.cpus();
     const cpuModel = cpus[0].model.trim();
@@ -91,7 +96,7 @@ async function getFamily() {
 function getOsVersion() {
     const version = os.release();
     const build = version.split('.')[2]; 
-    if (version.startsWith('10') && build >= 22000) {
+    if (version.startsWith('10.0') && parseInt(build, 10) >= 22000) {
         return 'Windows 11';
     } else {
         return `Windows ${version}`;

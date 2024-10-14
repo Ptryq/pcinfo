@@ -21,6 +21,6 @@ bun run server.ts
 To build executable client run (i hope this work 💀💀💀):
 
 ```bash
-bun build .\index.js --compile --target=bun-windows-x64-baseline --minify --sourcemap --outfile app
+bun run build
 ```
 
