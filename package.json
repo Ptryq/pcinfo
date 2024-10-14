@@ -11,6 +11,8 @@
   "dependencies": {
     "bun-promptx": "^0.2.0",
     "elysia": "^1.1.20",
+    "pg": "^8.13.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.4",
     "sqlite3": "^5.1.7",
     "systeminformation": "3"

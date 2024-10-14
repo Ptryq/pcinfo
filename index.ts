@@ -21,7 +21,21 @@ async function getUser() {
 
 function getCpuInfo() {
     const cpus = os.cpus();
-    return cpus[0].model.split(' ').pop();
+    const cpuModel = cpus[0].model.trim();
+    const amdPattern = /(Ryzen\s[3579]\s\d{4}[A-Z]?[XGU]?)/;
+    const intelPattern = /(i[3579])-?(\d{3,4}[A-Z]?[KFGTUH]?)/;  
+
+    const amdMatch = cpuModel.match(amdPattern);
+    if (amdMatch) {
+        return amdMatch[0];  
+    }
+
+    const intelMatch = cpuModel.match(intelPattern);
+    if (intelMatch) {
+        return `${intelMatch[1]} ${intelMatch[2]}`;  
+    }
+
+    return cpuModel;
 }
 
 async function getSerialNumber() {
@@ -36,21 +50,27 @@ function getRamInfo() {
 }
 
 async function getDiskSize() {
-    const data = (await si.diskLayout() ) as unknown as any[];
+    const data = (await si.diskLayout()) as unknown as any[];
 
     const totalDiskSize = data.reduce((sum, disk) => sum + disk.size, 0);
-    const totalDiskSizeGB = Math.ceil(totalDiskSize / 1024 ** 3);
-    let roundDiskSize
-    if (totalDiskSizeGB >= 440 && totalDiskSize <= 520) { roundDiskSize = 512}
-    else if (totalDiskSizeGB >= 220 && totalDiskSize <= 250) { roundDiskSize = 256}
-    else if (totalDiskSizeGB >= 370 && totalDiskSize <= 400) { roundDiskSize = 400}
-    else if (totalDiskSizeGB >= 450 && totalDiskSize <= 490) { roundDiskSize = 512}
-    else if (totalDiskSizeGB >= 890 && totalDiskSize <= 1000) { roundDiskSize = 960}
-    else {roundDiskSize = totalDiskSizeGB}
-    return `${roundDiskSize}GB`;
+    const totalDiskSizeGB = totalDiskSize / (1024 ** 3); 
 
-    
-    
+
+    const standardSizesGB = [128, 256, 512, 1024, 2048, 3072, 4096, 6144, 8192]; 
+
+    function findNearestSize(targetSize: number, standardSizes: number[]): number {
+        return standardSizes.reduce(
+            (closestSize, size) => Math.abs(size - targetSize) < Math.abs(closestSize - targetSize) ? size : closestSize
+        );
+    }
+ 
+    const nearestDiskSize = findNearestSize(totalDiskSizeGB, standardSizesGB);
+
+    if (nearestDiskSize >= 1024) {
+        return `${nearestDiskSize / 1024}T`;
+    } else {
+        return `${nearestDiskSize}GB`;
+    }
 }
 
 async function getProducerInfo() {
@@ -117,7 +137,7 @@ async function savePcDataToFile(data: typeof pcData) {
 console.log(pcData);
 
 const sendDataToServer = async (data: typeof pcData) => {
-    fetch('http://10.2.40.111:2137/device', {
+    fetch('http://localhost:5000/device', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -1,12 +1,13 @@
 import Elysia, { t } from "elysia";
 import { Sequelize, DataTypes } from "sequelize";
 
-const db = new Sequelize({
-    dialect: 'sqlite',
-    storage: './db.sqlite'
+// dbname, user, password
+const db = new Sequelize('name', 'user', 'password', {
+    host: 'localhost', 
+    dialect: 'postgres' 
 });
 
-const Device = db.define('Device', {
+const Device = db.define('Computers', {
     host: {
         type: DataTypes.STRING
     },
@@ -41,12 +42,11 @@ const Device = db.define('Device', {
 });
 
 await db.sync({
-    force: true // this clears the whole DB
+    force: true
 });
 
 const server = new Elysia().post('/device', async ({ body: { data } }) => {
     try {
-        // Używamy upsert do aktualizacji lub utworzenia nowego rekordu
         await Device.upsert({ ...data });
 
         return {
@@ -76,6 +76,6 @@ const server = new Elysia().post('/device', async ({ body: { data } }) => {
     })
 });
 
-server.listen(2137, () => {
-    console.log('Server is listening on port 2137');
+server.listen(5000, () => {
+    console.log('Server is listening on port 5000');
 });
