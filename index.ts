@@ -160,10 +160,10 @@ const sendDataToServer = async (data: typeof pcData) => {
 
 
 
-const valid = prompt("Is this okey? (y/N)", "y");
+// const valid = prompt("Is this okey? (y/N)", "y");
 
-if(valid == "y") {
-    sendDataToServer(pcData);
-}
+// if(valid == "y") {
+//     sendDataToServer(pcData);
+// }
 
-// sendDataToServer(pcData);
+sendDataToServer(pcData);
