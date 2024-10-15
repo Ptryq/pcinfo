@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as si from 'systeminformation';
 import { createSelection } from 'bun-promptx'
 import readline from 'readline';
-import * as figlet from 'figlet';
 
 
 const rl = readline.createInterface({
@@ -12,18 +11,14 @@ const rl = readline.createInterface({
 });
 
 async function getUser() {
-    console.log(figlet.textSync('D E F R O', {
-        font: 'Standard',
-        horizontalLayout: 'default',
-        verticalLayout: 'default',
-        width: 100,
-        whitespaceBreak: true
-    }));    return new Promise((resolve) => {
-        rl.question(`[kolejność: imię potem nazwisko] \n Podaj swoje imię i nazwisko: `, (answer) => {            resolve(answer); 
-            rl.close(); 
+    return new Promise((resolve) => {
+        const question = `[kolejność: imię potem nazwisko] \n Podaj swoje imię i nazwisko: `;
+        rl.question(question, (answer) => {
+            resolve(answer); 
         });
     });
 }
+
 function getCpuInfo() {
     const cpus = os.cpus();
     const cpuModel = cpus[0].model.trim();
@@ -45,7 +40,7 @@ function getCpuInfo() {
 
 async function getSerialNumber() {
     const data = await si.system();
-    return data.serial || 'Unknown';
+    return data.serial || `Unknown ${Math.floor(1000000 + Math.random() * 9000000).toString().padStart(7, '0')}`; 
 }
 
 function getRamInfo() {
@@ -142,7 +137,7 @@ async function savePcDataToFile(data: typeof pcData) {
 console.log(pcData);
 
 const sendDataToServer = async (data: typeof pcData) => {
-    fetch('http://localhost:5000/device', {
+    fetch('http://192.168.0.103:5000/device', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -151,7 +146,7 @@ const sendDataToServer = async (data: typeof pcData) => {
             id: '//TODO: identification of this device ',
             data: pcData,
         })
-    }).then(response => response.json()).then(data => console.log(data)).catch(error => console.error(error));
+    }).then(response => response.json()).then(data => console.log(data)).then(() => process.exit()).catch(error => promptForITSupport());
 }
 
 
@@ -159,11 +154,22 @@ const sendDataToServer = async (data: typeof pcData) => {
 
 
 
+async function promptForITSupport() {
+    console.log('Wystąpił błąd. Prosimy o kontakt z działem IT.');
+        const valid = prompt("Możesz wyłączyć to okno", "X");
+        
+        if(valid == "") {
+            process.exit();
+        }
+}
 
-// const valid = prompt("Is this okey? (y/N)", "y");
+try {
+    // await savePcDataToFile(pcData);
+    await sendDataToServer(pcData);
+} catch (error) {
+    console.error('Wystąpił błąd krytyczny podczas przetwarzania danych.');
+    await promptForITSupport();
+}
 
-// if(valid == "y") {
-//     sendDataToServer(pcData);
-// }
 
-sendDataToServer(pcData);
+
