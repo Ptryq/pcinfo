@@ -8,6 +8,9 @@ const db = new Sequelize('name', 'user', 'password', {
 });
 
 const Device = db.define('Computers', {
+    inuse: {
+        type: DataTypes.BOOLEAN
+    },
     host: {
         type: DataTypes.STRING
     },
@@ -42,8 +45,9 @@ const Device = db.define('Computers', {
 });
 
 await db.sync({
-    force: true
+    alter: true
 });
+
 
 const server = new Elysia().post('/device', async ({ body: { data } }) => {
     try {

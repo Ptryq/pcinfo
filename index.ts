@@ -89,16 +89,27 @@ async function getFamily() {
 }
 
 function getOsVersion() {
+    const platform = os.platform();
     const version = os.release();
-    const build = version.split('.')[2]; 
-    if (version.startsWith('10.0') && parseInt(build, 10) >= 22000) {
-        return 'Windows 11';
-    } else {
-        return `Windows ${version}`;
+    const build = parseInt(version.split('.')[2], 10);
+
+    if (platform === 'win32') {
+        if (version.startsWith('10.0') && build >= 22000) {
+            return 'Windows 11';
+        } else if (version.startsWith('10.0')) {
+            return 'Windows 10';
+        } else if (version.startsWith('6.1')) {
+            return 'Windows 7';
+        }
+    } else if (platform === 'linux') {
+        return 'Linux';
     }
+
+    return 'Unknown OS';
 }
 
 async function getPcData() {
+    const inuse = true;
     const host = os.hostname();
     const sn = await getSerialNumber();
     const cpu = getCpuInfo();
@@ -112,6 +123,7 @@ async function getPcData() {
 
 
     const pcData = {
+        inuse,
         host,
         sn,
         cpu,
